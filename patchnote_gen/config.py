@@ -29,12 +29,19 @@ class PatchnoteConfig:
 
 
 def load_config(path: Path = DEFAULT_CONFIG_PATH) -> PatchnoteConfig:
-    """Load configuration from a JSON file, falling back to defaults."""
+    """Load configuration from a JSON file, falling back to defaults.
+
+    Raises:
+        ValueError: If the file contains invalid JSON.
+    """
     if not path.exists():
         return PatchnoteConfig()
 
     with path.open("r") as f:
-        data = json.load(f)
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in config file '{path}': {e}") from e
 
     config = PatchnoteConfig()
     for key, value in data.items():
