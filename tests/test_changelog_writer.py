@@ -50,6 +50,19 @@ def test_prepend_to_existing_file(tmp_path):
     assert PREPEND_SEPARATOR in result
 
 
+def test_prepend_separator_position(tmp_path):
+    """Separator should appear between new content and existing content."""
+    out = tmp_path / "CHANGELOG.md"
+    existing = "# Old entry\n"
+    out.write_text(existing)
+    prepend_to_file(CONTENT, out)
+    result = out.read_text()
+    sep_index = result.index(PREPEND_SEPARATOR)
+    new_index = result.index(CONTENT)
+    old_index = result.index(existing)
+    assert new_index < sep_index < old_index
+
+
 def test_append_to_new_file(tmp_path):
     out = tmp_path / "CHANGELOG.md"
     append_to_file(CONTENT, out)
