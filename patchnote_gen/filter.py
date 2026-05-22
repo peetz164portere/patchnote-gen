@@ -53,3 +53,26 @@ def _is_breaking(commit: Commit) -> bool:
     # Check the raw subject line stored on the commit object if available
     subject = getattr(commit, "_raw", raw)
     return "!" in subject.split(":")[0] if ":" in subject else False
+
+
+def partition_commits(
+    commits: List[Commit],
+    include_types: Optional[List[str]] = None,
+) -> tuple[List[Commit], List[Commit]]:
+    """Split commits into matched and unmatched groups.
+
+    Args:
+        commits: Full list of commits to partition.
+        include_types: Commit types to match. Commits whose type is in this
+            list go into the first returned list; all others go into the second.
+            If *None*, all commits are placed in the matched list.
+
+    Returns:
+        A tuple of ``(matched, unmatched)`` commit lists.
+    """
+    if include_types is None:
+        return list(commits), []
+
+    matched = [c for c in commits if c.commit_type in include_types]
+    unmatched = [c for c in commits if c.commit_type not in include_types]
+    return matched, unmatched
